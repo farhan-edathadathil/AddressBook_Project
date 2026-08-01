@@ -7,8 +7,8 @@ int main()
     do
     {
         printf("\n----HERE IS OUR MENU----\n\n");
-        printf("1 - CHICKEN BIRIYANI  - 140 rs\n2 - MALABAR MEALS - 90 rs\n3 - ALFAHAM MANDHI - 240 rs\n4 - CHICKEN SHAWAYA - 240 rs\n5 - TEA - 12 rs\n6 - EXIT AND PAY\n\n");
-        printf("Enter the number of what ypu want :");
+        printf("1 - CHICKEN BIRIYANI  - 140 rs\n2 - MALABAR MEALS     - 90 rs\n3 - ALFAHAM MANDHI    - 240 rs\n4 - CHICKEN SHAWAYA   - 240 rs\n5 - TEA               - 12 rs\n6 - EXIT AND PAY\n\n");
+        printf("Enter the number of what you want :");
         scanf("%d",&choice);
         switch(choice)
         {
@@ -44,32 +44,32 @@ int main()
         printf("\n\n----------*******--------\n");
         printf("\n\n----Your current cart items----\n\n");
         if(cb)
-            printf("Chicken biriyani * %d\n",cb);
+            printf("Chicken biriyani  * %d\n",cb);
         if(m)
-            printf("Malabar meals * %d\n",m);
+            printf("Malabar meals     * %d\n",m);
         if(am)
-            printf("Alfaham mandhi * %d\n",am);
+            printf("Alfaham mandhi    * %d\n",am);
         if(cs)
-            printf("Chicken shawaya * %d\n",cs);
+            printf("Chicken shawaya   * %d\n",cs);
         if(t)
-            printf("Tea * %d\n",t);
-        printf("\nYour current cart value (including GST) = %f\n",total+(total*0.18));
+            printf("Tea               * %d\n",t);
+        printf("\nYour current cart value (including GST) = %g\n",total+(total*0.18));
         exit:
         printf("\n\n---------*********---------\n");
     } while (choice>0 && choice<6);
 
     printf("\n\n-----YOUR BILL------\n\n");
     if(cb)
-        printf("Chicken biriyani - 140 rs * %d\n",cb);
+        printf("Chicken biriyani  - 140 rs * %d\n",cb);
     if(m)
-        printf("Malabar meals - 90 rs * %d\n",m);
+        printf("Malabar meals     - 90 rs * %d\n",m);
     if(am)
-        printf("Alfaham mandhi - 240 rs* %d\n",am);
+        printf("Alfaham mandhi    - 240 rs* %d\n",am);
     if(cs)
-        printf("Chicken shawaya - 240 rs* %d\n",cs);
+        printf("Chicken shawaya   - 240 rs* %d\n",cs);
     if(t)
-        printf("Tea - 12 * %d\n",t);
-
+        printf("Tea               - 12 * %d\n",t);
+    printf("\nYour total bill amount         = %d rs\n",total);
     printf("\nYour bill amount including GST = %g rs\n",total+(total*0.18));
     printf("\n\n-----Thank You Visit Again-----\n");
     printf("\n\n---------*******----------\n");

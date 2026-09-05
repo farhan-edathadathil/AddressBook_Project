@@ -25,5 +25,8 @@ int validname(char *name);
 int validnum(Contact *num,int count);
 int validmail(Contact *mail,int count);
 unsigned long int my_atoi(char *s);
+int name_input(char *name);
+int num_input(Contact *num,int count);
+int mail_input(Contact *mail,int count);
 
 #endif

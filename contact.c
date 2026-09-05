@@ -24,7 +24,6 @@ void saveAndExit(AddressBook *addressBook) {
     exit(EXIT_SUCCESS); // Exit the program
 }
 
-
 void createContact(AddressBook *addressBook)
 {
 	/* Define the logic to create a Contacts */
@@ -33,56 +32,17 @@ void createContact(AddressBook *addressBook)
     {
         getchar();
         name:
-        if(fgets((*addressBook).contacts[addressBook->contactCount].name,50,stdin) != NULL)
-        {
-            if (strchr((*addressBook).contacts[addressBook->contactCount].name, '\n') == NULL)
-            {
-                printf("\nINVALID :- Input may be too long!\n\n");
-                while ((ch = getchar()) != '\n' && ch != EOF);
-                goto name;
-            }
-            *(strchr((*addressBook).contacts[addressBook->contactCount].name, '\n'))='\0';
-            if(validname((addressBook->contacts+(addressBook->contactCount))->name)==0)
-                goto name;
-        }
-        else 
+        if(name_input((addressBook->contacts+(addressBook->contactCount))->name)==0)
             goto name;
         
-        char num[12];
         num:
-        printf("Enter the 10 digit phone number : ");
-        if(fgets(num,12,stdin) != NULL)
-        {
-            if (strchr(num, '\n') == NULL)
-            {
-                printf("\nINVALID PHONE NUMBER :- Input must be 10 digits!\n\n");
-                while ((ch = getchar()) != '\n' && ch != EOF);
-                goto num;
-            }
-            (addressBook->contacts+(addressBook->contactCount))->phone=my_atoi(num);
-            if(validnum((*addressBook).contacts ,addressBook->contactCount)==0)
-                goto num;
-        }
-        else
+        if(num_input((*addressBook).contacts ,addressBook->contactCount)==0)
             goto num;
         
         mail:
-        printf("Enter the mail id : ");
-        if(fgets((*addressBook).contacts[addressBook->contactCount].email,256,stdin) != NULL)
-        {
-            if (strchr((*addressBook).contacts[addressBook->contactCount].email, '\n') == NULL)
-            {
-                printf("\nINVALID MAIL ID :- Input may be too long!\n\n");
-                while ((ch = getchar()) != '\n' && ch != EOF);
-                goto mail;
-            }
-            
-            *(strchr((*addressBook).contacts[addressBook->contactCount].email, '\n'))='\0';
-            if(validmail((*addressBook).contacts,addressBook->contactCount)==0)
-                goto mail;
-        }
-        else 
+        if(mail_input((*addressBook).contacts,addressBook->contactCount)==0)
             goto mail;
+        printf("\nContact successfully saved !!\n\n");
         addressBook->contactCount++;
     }
     else
@@ -192,13 +152,14 @@ int validmail(Contact *mail,int count)
         printf("\nINVALID MAIL ID :- Mail id should contain atleast two domain part !! \n\n");
         return 0;
     }
-    int nch=0;
+    int nch=0,ndot=0;
     for(int i=0;i<length;i++)
     {
         if((token[i]>='a' && token[i]<='z') || (token[i]>='0' && token[i]<='9'))
             nch++;
         else if(token[i]=='.')
         {
+            ndot++;
             if(nch<1 || nch>63)
             {
                 printf("\nINVALID MAIL ID :- Domain of mail atleast contain 1 characters and should be less than 64 charecters !!\n\n");
@@ -212,7 +173,11 @@ int validmail(Contact *mail,int count)
             return 0;
         }
     }
-
+    if(ndot==0)
+    {
+        printf("\nINVALID MAIL ID :- Mail id should contain atleast two domain part !! \n\n");
+        return 0;
+    }
     for(int i=0;i<count;i++)
     {
          if(strcmp((mail+i)->email,(mail+count)->email)==0)
@@ -223,6 +188,7 @@ int validmail(Contact *mail,int count)
     }
     return 1;
 }
+
 unsigned long int my_atoi(char *s)
 {
     unsigned long int num = 0;
@@ -241,4 +207,70 @@ unsigned long int my_atoi(char *s)
         return -1*num;
     else
         return num;
+}
+
+int name_input(char *name)
+{
+    char ch;
+    printf("Enter the name of contact : ");
+    if(fgets(name,50,stdin) != NULL)
+    {
+        if (strchr(name, '\n') == NULL)
+        {
+            printf("\nINVALID :- Input may be too long!\n\n");
+            while ((ch = getchar()) != '\n' && ch != EOF);
+            return 0;
+        }
+        *(strchr(name, '\n'))='\0';
+        if(validname(name)==0)
+            return 0;
+        return 1;
+    }
+    else 
+        return 0;
+    
+}
+
+int num_input(Contact *num,int count)
+{
+    char temp[12],ch;
+    printf("Enter the 10 digit phone number : ");
+        if(fgets(temp,12,stdin) != NULL)
+        {
+            if (strchr(temp, '\n') == NULL)
+            {
+                printf("\nINVALID PHONE NUMBER :- Input must be 10 digits!\n\n");
+                while ((ch = getchar()) != '\n' && ch != EOF);
+                return 0;
+            }
+            (num+count)->phone=my_atoi(temp);
+            if(validnum(num ,count)==0)
+                return 0;
+            return 1;
+        }
+        else
+            return 0;
+        
+}
+
+int mail_input(Contact *mail,int count)
+{
+    char ch;
+    printf("Enter the mail id : ");
+    if(fgets((mail+count)->email,256,stdin) != NULL)
+    {
+        if (strchr((mail+count)->email, '\n') == NULL)
+        {
+            printf("\nINVALID MAIL ID :- Input may be too long!\n\n");
+            while ((ch = getchar()) != '\n' && ch != EOF);
+            return 0;
+        }
+        
+        *(strchr((mail+count)->email, '\n'))='\0';
+        if(validmail(mail,count)==0)
+            return 0;
+        return 1;
+    }
+    else 
+        return 0;
 }

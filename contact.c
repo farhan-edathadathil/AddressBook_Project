@@ -1,25 +1,75 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
 #include "contact.h"
 #include "file.h"
 #include "populate.h"
 
-void listContacts(AddressBook *addressBook, int sortCriteria) 
+void listContacts(AddressBook *addressBook) 
 {
     // Sort contacts based on the chosen criteria
-    
+    int sortchoice,ch;
+    int arr[MAX_CONTACTS]={0};
+    printf("\n How do you want to List contacts ?\n\n");
+    printf("1. List by name\n");
+    printf("2. List by phone number\n");
+    printf("3. List by email\n");
+    printf("\nEnter your choice : ");
+    if(scanf("%d",&sortchoice)==0)
+    {
+        printf("\nInvalid input !!\n\n");
+        while ((ch = getchar()) != '\n' && ch != EOF);
+        return;
+    }
+    switch(sortchoice)
+    {
+        case 1:
+            sortName(addressBook);
+            printf("\nSorted All contacts by Name :\n");
+            printf("\n%-25s  %-10s  %s\n","NAME ","PHONE no. ","EMAIL");
+            for(int i=0;i<addressBook->contactCount;i++)
+                display(addressBook->contacts+i);
+            break;
+        case 2:
+            sortNum(addressBook);
+            printf("\nSorted All contacts by Phone Number :\n");
+            printf("\n%-25s  %-10s  %s\n","NAME ","PHONE no. ","EMAIL");
+            for(int i=0;i<addressBook->contactCount;i++)
+                display(addressBook->contacts+i);
+            sortName(addressBook);
+            break;
+        case 3:
+            sortMail(addressBook);
+            printf("\nSorted All contacts by Mail Id :\n");
+            printf("\n%-25s  %-10s  %s\n","NAME ","PHONE no. ","EMAIL");
+            for(int i=0;i<addressBook->contactCount;i++)
+                display(addressBook->contacts+i);
+            sortName(addressBook);
+            break;
+        default:
+            printf("\nInvalid input !!\n\n");
+
+    }  
 }
 
-void initialize(AddressBook *addressBook) {
+void initialize(AddressBook *addressBook) 
+{
     addressBook->contactCount = 0;
-    populateAddressBook(addressBook);
+    //populateAddressBook(addressBook);
     
     // Load contacts from file during initialization (After files)
-    //loadContactsFromFile(addressBook);
+    for(int i=0;i<=100;i++)
+    {
+        printf("Loading contacts from files........%d%%]\r",i);
+        usleep(10000);
+        fflush(stdout);
+    }
+    loadContactsFromFile(addressBook);
 }
 
-void saveAndExit(AddressBook *addressBook) {
+void saveAndExit(AddressBook *addressBook) 
+{
     saveContactsToFile(addressBook); // Save contacts to file
     exit(EXIT_SUCCESS); // Exit the program
 }
@@ -38,7 +88,7 @@ void createContact(AddressBook *addressBook)
             strcpy((addressBook->contacts+(addressBook->contactCount))->name,(addressBook->temp).name);
         
         num:
-        if(num_input((*addressBook).contacts ,addressBook->contactCount,&((addressBook->temp).phone))==0)
+        if(num_input(&((addressBook->temp).phone))==0)
             goto num;
         else
         {
@@ -51,7 +101,7 @@ void createContact(AddressBook *addressBook)
         }
         
         mail:
-        if(mail_input((*addressBook).contacts,addressBook->contactCount,(addressBook->temp).email)==0)
+        if(mail_input((addressBook->temp).email)==0)
             goto mail;
         else
         {
@@ -79,12 +129,17 @@ int searchContact(AddressBook *addressBook)
     int choice,i,num_result=0;
     char ch;
     Contact *temp;
-    printf("\n what you want to search \n\n");
-    printf(" 1. Search by name\n");
-    printf(" 2. Search by phone number\n");
-    printf(" 3. Search by email\n");
-    printf(" \nEnter your choice : ");
-    scanf("%d",&choice);
+    printf("\nwhat you want to search \n\n");
+    printf("1. Search by name\n");
+    printf("2. Search by phone number\n");
+    printf("3. Search by email\n");
+    printf("\nEnter your choice : ");
+    if(scanf("%d",&choice)==0)
+    {
+        printf("\nInvalid input !!\n\n");
+        while ((ch = getchar()) != '\n' && ch != EOF);
+        return 0;
+    }
     getchar();
     switch(choice)
     {
@@ -206,7 +261,6 @@ int searchContact(AddressBook *addressBook)
 void editContact(AddressBook *addressBook)
 {
 	/* Define the logic for Editcontact */
-    Contact backup;
     int countbackup;
     int index;
     char ch;
@@ -233,15 +287,72 @@ void editContact(AddressBook *addressBook)
     display(addressBook->contacts+(index-1));
     printf("\nEnter (YES -Y or NO -N) : ");
     scanf(" %c",&ch);
-    //getchar();
     if(ch=='Y' || ch=='y')
     {
-        backup=addressBook->contacts[index-1];
-        countbackup=addressBook->contactCount;
-        addressBook->contactCount=index-1;
-        createContact(addressBook);
-        addressBook->contactCount=countbackup;
-        printf("Contact successfully updated");
+
+        int choice;
+        try:
+        printf("\nwhat you want to edit in the above contact ? \n\n");
+        printf("1. Edit name\n");
+        printf("2. Edit phone number\n");
+        printf("3. Edit email\n");
+        printf("\nEnter your choice : ");
+        if(scanf("%d",&choice)==0)
+        {
+            printf("\nInvalid input !!\n\n");
+            while ((ch = getchar()) != '\n' && ch != EOF);
+            goto try;
+        }
+        getchar();
+        switch(choice)
+        {
+            case 1:
+                name:
+                if(name_input((addressBook->temp).name)==0)
+                    goto name;
+                else
+                    strcpy((addressBook->contacts+(index-1))->name,(addressBook->temp).name);
+                printf("\nName updated successfully !!\n");
+                break;
+
+            case 2:
+                num:
+                if(num_input(&((addressBook->temp).phone))==0)
+                    goto num;
+                else
+                {
+                    if(num_search(addressBook,addressBook->contacts,&((addressBook->temp).phone))!=NULL)
+                    {
+                        printf("\nEntered phone number alredy exists !!!\n\n");
+                        goto num;
+                    }
+                    (addressBook->contacts+(index-1))->phone=(addressBook->temp).phone;
+                }
+                printf("\nPhone number updated successfully !!\n");
+                break;
+
+            case 3:
+                mail:
+                if(mail_input((addressBook->temp).email)==0)
+                    goto mail;
+                else
+                {
+                    if(mail_search(addressBook,addressBook->contacts,(addressBook->temp).email)!=NULL)
+                    {
+                        printf("\nEntered email already exist !!\n\n");
+                        goto mail;
+                    }
+                    strcpy((addressBook->contacts+(index-1))->email,(addressBook->temp).email);
+                }
+                printf("\nEmail updated successfully !!\n");
+                break;
+
+            default:
+                printf("\nInvalid input !!\n\n");
+                goto try;
+        }
+        printf("\n%-25s  %-10s  %s\n","NAME ","PHONE no. ","EMAIL");
+        display(addressBook->contacts+index-1);
     }
     else if(ch=='N' || ch=='n')
     {
@@ -253,8 +364,7 @@ void editContact(AddressBook *addressBook)
         printf("\nINVALID INPUT !!\n");
         while ((ch = getchar()) != '\n' && ch != EOF);
         goto again;
-    }
-    
+    }  
 }
 
 void deleteContact(AddressBook *addressBook)
@@ -293,6 +403,12 @@ void deleteContact(AddressBook *addressBook)
             addressBook->contacts[i-1]=addressBook->contacts[i];
         }
         addressBook->contactCount--;
+        for(int i=0;i<=100;i++)
+        {
+            printf("Deleting........%d%%]\r",i);
+            usleep(8000);
+            fflush(stdout);
+        }
         printf("\nContact deleted successfully !!\n");
     }
     else if(ch=='N' || ch=='n')
@@ -330,7 +446,7 @@ int validname(char *name)
     return 1;
 }
 
-int validnum(Contact *arr,int count,long unsigned int *phone)
+int validnum(long unsigned int *phone)
 {
     if(*phone < 1000000000L || *phone > 9999999999L)
     {
@@ -340,7 +456,7 @@ int validnum(Contact *arr,int count,long unsigned int *phone)
     return 1;
 }
 
-int validmail(Contact *arr,int count,char *email)
+int validmail(char *email)
 {
     char temp[256],*token;
     strcpy(temp,email);
@@ -418,26 +534,6 @@ int validmail(Contact *arr,int count,char *email)
     return 1;
 }
 
-unsigned long int my_atoi(char *s)
-{
-    unsigned long int num = 0;
-    char *temp=s;
-    while(*s)
-    {
-        if(*s>='0' && *s<='9')
-            num=num*10+(*s-'0');
-        else if((s[0]=='-' || s[0]=='+') && (&temp[0])==s)
-            num=num;
-        else if(num==0)
-            return 0;
-        s++;
-    }
-    if(temp[0]=='-')
-        return -1*num;
-    else
-        return num;
-}
-
 int name_input(char *name)
 {
     char ch;
@@ -460,7 +556,7 @@ int name_input(char *name)
     
 }
 
-int num_input(Contact *arr,int count,long unsigned int *phone)
+int num_input(long unsigned int *phone)
 {
     char temp[12],ch;
     printf("Enter the 10 digit phone number : ");
@@ -473,7 +569,7 @@ int num_input(Contact *arr,int count,long unsigned int *phone)
                 return 0;
             }
             *phone=my_atoi(temp);
-            if(validnum(arr ,count,phone)==0)
+            if(validnum(phone)==0)
                 return 0;
             return 1;
         }
@@ -482,7 +578,7 @@ int num_input(Contact *arr,int count,long unsigned int *phone)
         
 }
 
-int mail_input(Contact *arr,int count,char *email)
+int mail_input(char *email)
 {
     char ch;
     printf("Enter the mail id : ");
@@ -496,7 +592,7 @@ int mail_input(Contact *arr,int count,char *email)
         }
         
         *(strchr(email, '\n'))='\0';
-        if(validmail(arr,count,email)==0)
+        if(validmail(email)==0)
             return 0;
         return 1;
     }
@@ -553,9 +649,87 @@ Contact *name_search(AddressBook *addressBook,Contact *arr,char *name)
     return NULL;
 
 }
+
+void sortName(AddressBook *addressBook)
+{
+    Contact temp;
+    for(int i=0;i<addressBook->contactCount;i++)
+    {
+        for(int j=0;j<addressBook->contactCount-1;j++)
+        {
+            if(strcasecmp(addressBook->contacts[j].name,addressBook->contacts[j+1].name)>0)
+            {
+                temp=addressBook->contacts[j];
+                addressBook->contacts[j]=addressBook->contacts[j+1];
+                addressBook->contacts[j+1]=temp;
+            }
+            
+        }
+    }
+
+}
+
+void sortNum(AddressBook *addressBook)
+{
+    Contact temp;
+    for(int i=0;i<addressBook->contactCount;i++)
+    {
+        for(int j=0;j<addressBook->contactCount-1;j++)
+        {
+            if(addressBook->contacts[j].phone>addressBook->contacts[j+1].phone)
+            {
+                temp=addressBook->contacts[j];
+                addressBook->contacts[j]=addressBook->contacts[j+1];
+                addressBook->contacts[j+1]=temp;
+            }
+            
+        }
+    }
+
+}
+
+void sortMail(AddressBook *addressBook)
+{
+    Contact temp;
+    for(int i=0;i<addressBook->contactCount;i++)
+    {
+        for(int j=0;j<addressBook->contactCount-1;j++)
+        {
+            if(strcasecmp(addressBook->contacts[j].email,addressBook->contacts[j+1].email)>0)
+            {
+                temp=addressBook->contacts[j];
+                addressBook->contacts[j]=addressBook->contacts[j+1];
+                addressBook->contacts[j+1]=temp;
+            }
+            
+        }
+    }
+
+}
+
 void display(Contact *contact)
 {   
     printf("%-25s  %lu  %s\n",contact->name,contact->phone,contact->email);
+}
+
+unsigned long int my_atoi(char *s)
+{
+    unsigned long int num = 0;
+    char *temp=s;
+    while(*s)
+    {
+        if(*s>='0' && *s<='9')
+            num=num*10+(*s-'0');
+        else if((s[0]=='-' || s[0]=='+') && (&temp[0])==s)
+            num=num;
+        else if(num==0)
+            return 0;
+        s++;
+    }
+    if(temp[0]=='-')
+        return -1*num;
+    else
+        return num;
 }
 
 void my_itoa(long unsigned int num, char str[])

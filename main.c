@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include "contact.h"
+#include <unistd.h>
+#include "file.h"
 
 int main() 
 {
@@ -8,7 +10,7 @@ int main()
     initialize(&addressBook); // Initialize the address book
 
     do {
-        printf("\n*** %d contacts are saved  ***\n",addressBook.contactCount);
+        printf("\n*** %d contacts are available ***\n",addressBook.contactCount);
         printf("\nAddress Book Menu:\n");
         printf("1. Create contact\n");
         printf("2. Search contact\n");
@@ -33,15 +35,29 @@ int main()
             case 4:
                 deleteContact(&addressBook);
                 break;
-            case 5:          
-                listContacts(&addressBook, sortChoice);
+            case 5:
+                listContacts(&addressBook);
                 break;
             case 6:
-               // printf("Saving and Exiting...\n");
-                //saveContactsToFile(&addressBook);
+                for(int i=0;i<=100;i++)
+                {
+                    printf("Saving changes........%d%%]\r",i);
+                    usleep(10000);
+                    fflush(stdout);
+                }
+                printf("\nChanges successfully saved\n");
+                saveContactsToFile(&addressBook);
                 break;
             case 7:
-                //exit from function
+                for(int i=0;i<=100;i++)
+                {
+                    printf("Saving and Exiting........%d%%]\r",i);
+                    usleep(10000);
+                    fflush(stdout);
+                }
+                saveContactsToFile(&addressBook);
+                printf("\nContacts successfully saved\n");
+                break;   
             default:
                 printf("\nInvalid choice. Please try again.\n");
                 while ((ch = getchar()) != '\n' && ch != EOF);

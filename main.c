@@ -3,12 +3,12 @@
 
 int main() 
 {
-    int choice,sortChoice;
+    int choice,sortChoice,ch;
     AddressBook addressBook;
     initialize(&addressBook); // Initialize the address book
 
     do {
-        printf("*** %d contacts are saved  ***",addressBook.contactCount);
+        printf("\n*** %d contacts are saved  ***\n",addressBook.contactCount);
         printf("\nAddress Book Menu:\n");
         printf("1. Create contact\n");
         printf("2. Search contact\n");
@@ -40,10 +40,11 @@ int main()
                // printf("Saving and Exiting...\n");
                 //saveContactsToFile(&addressBook);
                 break;
-	    case 7:
-		//exit from function
+            case 7:
+                //exit from function
             default:
-                printf("Invalid choice. Please try again.\n");
+                printf("\nInvalid choice. Please try again.\n");
+                while ((ch = getchar()) != '\n' && ch != EOF);
         }
     } while (choice != 7);
     

@@ -5,7 +5,8 @@
 
 int main() 
 {
-    int choice,sortChoice,ch;
+    int choice,ch;
+    char save;
     AddressBook addressBook;
     initialize(&addressBook); // Initialize the address book
 
@@ -17,10 +18,15 @@ int main()
         printf("3. Edit contact\n");
         printf("4. Delete contact\n");
         printf("5. List all contacts\n");
-    	printf("6. Save contacts\n");		
+    	printf("6. Save and Exit\n");		
         printf("7. Exit\n");
         printf("Enter your choice: ");
-        scanf("%d", &choice);
+        if(scanf("%d", &choice)!=1)
+        {
+            printf("\nInvalid input !!\n\n");
+            while ((ch = getchar()) != '\n' && ch != EOF);
+            continue;
+        }
         
         switch (choice) {
             case 1:
@@ -45,21 +51,38 @@ int main()
                     usleep(10000);
                     fflush(stdout);
                 }
-                printf("\nChanges successfully saved\n");
-                saveContactsToFile(&addressBook);
+                printf("\n\nChanges successfully saved !!\n");
+                saveAndExit(&addressBook);
                 break;
             case 7:
-                for(int i=0;i<=100;i++)
+                again:
+                printf("\nYou are going to exit -> do you want to save the changes before exit?\n");
+                printf("\nEnter (YES -Y or NO -N) : ");
+                scanf(" %c",&save);
+                if(save=='Y' || save=='y')
                 {
-                    printf("Saving and Exiting........%d%%]\r",i);
-                    usleep(10000);
-                    fflush(stdout);
+                    for(int i=0;i<=100;i++)
+                    {
+                        printf("Saving and Exiting........%d%%]\r",i);
+                        usleep(10000);
+                        fflush(stdout);
+                    }
+                    saveContactsToFile(&addressBook);
+                    printf("\n\nContacts successfully saved !!\n");
                 }
-                saveContactsToFile(&addressBook);
-                printf("\nContacts successfully saved\n");
+                else if(save=='N' || save=='n')
+                {
+                    printf("\nExit without saving changes !!\n");
+                }
+                else
+                {
+                    printf("\nINVALID INPUT !!\n");
+                    while ((ch = getchar()) != '\n' && ch != EOF);
+                    goto again;
+                }
                 break;   
             default:
-                printf("\nInvalid choice. Please try again.\n");
+                printf("\n\nInvalid choice. Please try again.\n");
                 while ((ch = getchar()) != '\n' && ch != EOF);
         }
     } while (choice != 7);

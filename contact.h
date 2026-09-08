@@ -17,6 +17,7 @@ typedef struct {
 } AddressBook;
 
 void createContact(AddressBook *addressBook);
+void saveAndExit(AddressBook *addressBook);
 int searchContact(AddressBook *addressBook);
 void editContact(AddressBook *addressBook);
 void deleteContact(AddressBook *addressBook);

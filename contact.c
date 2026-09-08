@@ -251,7 +251,7 @@ int searchContact(AddressBook *addressBook)
             break;
 
         default:
-            printf("Invalid choice ");
+            printf("\nInvalid choice \n");
             return 0;
     }
     return num_result;
@@ -289,7 +289,6 @@ void editContact(AddressBook *addressBook)
     scanf(" %c",&ch);
     if(ch=='Y' || ch=='y')
     {
-
         int choice;
         try:
         printf("\nwhat you want to edit in the above contact ? \n\n");

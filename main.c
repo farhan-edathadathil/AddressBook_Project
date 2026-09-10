@@ -1,3 +1,11 @@
+/*
+FARHAN E
+
+09/09/2026
+
+PROJECT 1 :- ADDRESSBOOK
+*/
+
 #include <stdio.h>
 #include "contact.h"
 #include <unistd.h>
@@ -27,7 +35,14 @@ int main()
             while ((ch = getchar()) != '\n' && ch != EOF);
             continue;
         }
-        
+        ch = getchar();
+        if (ch != '\n' && ch != EOF)
+        {
+            printf("\nInvalid input !!\n\n");
+
+            while ((ch = getchar()) != '\n' && ch != EOF);
+            continue;
+        }
         switch (choice) {
             case 1:
                 createContact(&addressBook);
@@ -59,11 +74,18 @@ int main()
                 printf("\nYou are going to exit -> do you want to save the changes before exit?\n");
                 printf("\nEnter (YES -Y or NO -N) : ");
                 scanf(" %c",&save);
+                ch = getchar();
+                if (ch != '\n' && ch != EOF)
+                {
+                    printf("\nINVALID INPUT !!\n");
+                    while ((ch = getchar()) != '\n' && ch != EOF);
+                    goto again;
+                }
                 if(save=='Y' || save=='y')
                 {
                     for(int i=0;i<=100;i++)
                     {
-                        printf("Saving and Exiting........%d%%]\r",i);
+                        printf("Saving and Exiting........%d%%\r",i);
                         usleep(10000);
                         fflush(stdout);
                     }
@@ -77,13 +99,11 @@ int main()
                 else
                 {
                     printf("\nINVALID INPUT !!\n");
-                    while ((ch = getchar()) != '\n' && ch != EOF);
                     goto again;
                 }
                 break;   
             default:
                 printf("\n\nInvalid choice. Please try again.\n");
-                while ((ch = getchar()) != '\n' && ch != EOF);
         }
     } while (choice != 7);
     

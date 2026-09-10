@@ -3,17 +3,19 @@
 
 #define MAX_CONTACTS 100
 
-typedef struct {
+typedef struct 
+{
     char name[25];
     unsigned long int phone;
     char email[256];
 } Contact;
 
-typedef struct {
+typedef struct 
+{
     Contact contacts[100];
-    Contact temp;
     int contactCount;
-    Contact *ptr;
+    Contact temp;     //to store temporary data to validate,search,edit etc.
+    Contact *ptr;     //to store the while searching.
 } AddressBook;
 
 void createContact(AddressBook *addressBook);

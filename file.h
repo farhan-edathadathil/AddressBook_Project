@@ -3,7 +3,7 @@
 
 #include "contact.h"
 
-void saveContactsToFile(AddressBook *addressBook);
+int saveContactsToFile(AddressBook *addressBook);
 void loadContactsFromFile(AddressBook *addressBook);
 
 #endif

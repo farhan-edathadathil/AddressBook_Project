@@ -15,7 +15,7 @@ typedef struct
     Contact contacts[100];
     int contactCount;
     Contact temp;     //to store temporary data to validate,search,edit etc.
-    Contact *ptr;     //to store the while searching.
+    Contact *ptr;     //to store address the while searching.
 } AddressBook;
 
 void createContact(AddressBook *addressBook);

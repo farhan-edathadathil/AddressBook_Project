@@ -1,118 +1,570 @@
-# Address Book Management System
+# Address Book Management System – Skill Sheet
 
-## Name
+## 1. Name
 
 **Address Book Management System**
 
-## Description
-
-A menu-driven **Address Book Management System developed in C** to create, search, edit, delete, list, and store contact information.
-
-The project manages contact details such as:
-
-* Name
-* Phone Number
-* Email Address
-
-The application uses **structures, arrays, pointers, functions, strings, input validation, `stdin` buffer handling, file handling, CSV storage, searching, sorting, and modular programming**.
-
-Contact data is stored in `contacts.csv` so that contacts can be loaded when the program starts and saved when the user exits.
+**Programming Language:** C
+**Interface:** Command-Line Interface (CLI)
+**Storage:** CSV File Handling
 
 ---
 
-# Menu Options
+# 2. Description
 
-The application provides the following options:
+The **Address Book Management System** is a menu-driven application developed in **C** to manage contact information such as **name, phone number, and email address**.
 
-```text
-1. Create contact
-2. Search contact
-3. Edit contact
-4. Delete contact
-5. List all contacts
-6. Save and Exit
-7. Exit
-```
-
----
-
-# Project Structure
-
-```text
-AddressBook_Project/
-│
-├── main.c
-├── contact.c
-├── contact.h
-├── file.c
-├── file.h
-├── populate.c
-├── populate.h
-├── contacts.csv
-└── README.md
-```
-
-### `main.c`
-
-Controls the main program flow and menu.
-
-It handles:
-
-* Displaying the menu
-* Reading menu choices
-* Checking invalid menu input
-* Clearing unwanted input from `stdin`
-* Calling the required contact operation
-* Save and Exit
-* Exit with save/no-save confirmation
-
-### `contact.c`
-
-Contains the main address-book operations:
+The application provides the following operations:
 
 * Create contact
 * Search contact
 * Edit contact
 * Delete contact
 * List contacts
-* Input functions
-* Validation functions
-* Search functions
-* Sorting functions
-* Display function
-* Custom number conversion functions
+* Save contacts
+* Exit with or without saving
 
-### `contact.h`
+The project uses **structures and arrays** to store contacts and is divided into multiple `.c` and `.h` files for modular programming.
 
-Contains the contact/address-book declarations and function prototypes.
+The application also uses a CSV file (`contacts.csv`) to permanently store contact information.
 
-### `file.c`
-
-Handles:
-
-* Saving contacts to `contacts.csv`
-* Loading contacts from `contacts.csv`
-* Checking file-opening errors
-
-### `file.h`
-
-Contains file-handling declarations.
-
-### `populate.c / populate.h`
-
-Contains address-book population-related functionality.
-
-### `contacts.csv`
-
-Stores the saved contact information.
+The project mainly focuses on implementing reliable **user input handling, input validation, searching, sorting, array manipulation, pointers, and file handling**.
 
 ---
 
-# Features
+# 3. Logic
 
-## 1. Create Contact
+## 3.1 Program Initialization
 
-The Create Contact option takes:
+The program starts by creating and initializing the `AddressBook` structure.
+
+The initialization logic is:
+
+```text
+Start Program
+      ↓
+Initialize AddressBook
+      ↓
+Set contactCount
+      ↓
+Load contacts from contacts.csv
+      ↓
+Display Main Menu
+```
+
+The saved contacts are loaded into the contacts array when the program starts.
+
+---
+
+## 3.2 Main Menu Choice Logic
+
+The main menu provides options for different address-book operations.
+
+```text
+1. Create Contact
+2. Search Contact
+3. Edit Contact
+4. Delete Contact
+5. List All Contacts
+6. Save and Exit
+7. Exit
+```
+
+The choice input is carefully checked because the user may enter:
+
+```text
+1
+```
+
+or invalid inputs such as:
+
+```text
+1 2
+abc
+1abc
+```
+
+or another datatype.
+
+### Logic
+
+```text
+Take choice
+    ↓
+Check whether scanf() successfully read integer
+    ↓
+If invalid
+    ↓
+Clear stdin
+    ↓
+Ask again
+
+If valid integer
+    ↓
+Read next character
+    ↓
+Is it '\n'?
+   /      \
+ YES      NO
+  ↓        ↓
+Valid    Extra input
+           ↓
+       Clear stdin
+           ↓
+        Ask again
+```
+
+This ensures that only a **complete and valid menu choice** is accepted.
+
+---
+
+# 3.3 `stdin` Cleaning Logic
+
+A common input-handling requirement throughout the project is to make sure that `stdin` is clean before taking the next input.
+
+If unwanted characters remain in the input stream, they may be consumed by the next input operation.
+
+The program clears the input stream until either:
+
+```c
+'\n'
+```
+
+or:
+
+```c
+EOF
+```
+
+is encountered.
+
+Conceptually:
+
+```text
+Previous Input
+      ↓
+Check for unwanted characters
+      ↓
+Clear remaining stdin data
+      ↓
+Take next input
+```
+
+This logic is applied wherever required throughout the program.
+
+---
+
+# 3.4 String Input Using `fgets()`
+
+For string inputs such as:
+
+* Name
+* Phone number
+* Email
+
+the program uses `fgets()`.
+
+The reason is that `fgets()` allows the program to control the maximum number of characters read and helps avoid unsafe uncontrolled string input.
+
+After reading the input, the program checks whether `'\n'` exists.
+
+### If `'\n'` exists
+
+The complete input was received within the buffer.
+
+```text
+fgets()
+  ↓
+'\n' found
+  ↓
+Remove '\n'
+  ↓
+Validate input
+```
+
+### If `'\n'` does not exist
+
+The input may be longer than the buffer.
+
+```text
+fgets()
+  ↓
+'\n' not found
+  ↓
+Input may be incomplete
+  ↓
+Clear remaining stdin
+  ↓
+Ask user again
+```
+
+This ensures that incomplete input is not accepted and leftover characters do not affect the next input.
+
+---
+
+# 3.5 Name Input Logic
+
+The name is taken using `fgets()`.
+
+```text
+Take name
+    ↓
+Check complete input
+    ↓
+Remove '\n'
+    ↓
+Validate name
+    ↓
+Valid?
+ /     \
+YES     NO
+ ↓       ↓
+Store   Clear/Retry
+```
+
+The validation checks that the name contains only the allowed characters.
+
+The program rejects invalid names and asks the user to enter the name again.
+
+---
+
+# 3.6 Phone Number Input Logic
+
+The phone number is first taken as a string.
+
+```text
+Take phone number
+       ↓
+Check complete input
+       ↓
+Remove '\n'
+       ↓
+Validate characters
+       ↓
+Convert string to number
+       ↓
+Check 10-digit range
+       ↓
+Check first digit
+       ↓
+Valid?
+```
+
+The phone number must:
+
+* Contain exactly 10 digits.
+* Have a first digit other than `0`.
+
+The program also checks whether the phone number already exists.
+
+If it is invalid or already present, the user is asked to enter it again.
+
+---
+
+# 3.7 Email Input Logic
+
+The email address is taken using `fgets()`.
+
+```text
+Take email
+    ↓
+Check complete input
+    ↓
+Remove '\n'
+    ↓
+Validate email
+    ↓
+Check username
+    ↓
+Check '@'
+    ↓
+Check domain
+    ↓
+Valid?
+```
+
+The email validation uses string operations and `strtok()` to separate and validate the different parts of the email.
+
+The program also checks whether the email already exists.
+
+---
+
+# 3.8 Create Contact Logic
+
+When creating a contact, the program collects each field one by one.
+
+```text
+Create Contact
+      ↓
+Take Name
+      ↓
+Validate Name
+      ↓
+Take Phone
+      ↓
+Validate Phone
+      ↓
+Check Duplicate Phone
+      ↓
+Take Email
+      ↓
+Validate Email
+      ↓
+Check Duplicate Email
+      ↓
+Store Contact
+      ↓
+Increment contactCount
+```
+
+The contact is added only after the required information has passed validation.
+
+---
+
+# 3.9 Search Logic
+
+The project implements separate search logic for:
+
+* Name
+* Phone number
+* Email
+
+The important implementation detail is that the search function **returns the address of the matching contact**.
+
+The search function does not simply return an index or a success/failure value.
+
+### Search flow
+
+```text
+Start from contacts array
+        ↓
+Compare current contact
+        ↓
+Match?
+   /          \
+ YES          NO
+  ↓            ↓
+Return       Move to
+address      next contact
+of contact      ↓
+              Continue
+```
+
+When a matching contact is found:
+
+```text
+return &addressBook->contacts[i];
+```
+
+The returned value is therefore the **address/pointer of the matching `Contact` structure**.
+
+### Multiple matches
+
+The search pointer is moved forward after finding a match.
+
+This allows the program to find subsequent matching contacts.
+
+Conceptually:
+
+```text
+Contact 0
+   ↓
+Contact 1 ← Match → return address
+   ↓
+Continue from next contact
+   ↓
+Contact 2 ← Match → return address
+   ↓
+Continue
+```
+
+### No match
+
+When the search reaches the end of the contacts array without finding another matching contact:
+
+```text
+return NULL;
+```
+
+Therefore:
+
+```text
+Matching contact
+      ↓
+Return address of Contact
+
+No matching contact remaining
+      ↓
+Return NULL
+```
+
+This use of a **pointer return value and `NULL`** is an important part of the search implementation.
+
+---
+
+# 3.10 Name Search Logic
+
+Name searching uses case-insensitive comparison.
+
+The search allows matching based on the entered part of the name.
+
+```text
+Enter name/search string
+        ↓
+Traverse contacts
+        ↓
+Case-insensitive comparison
+        ↓
+Match?
+   /       \
+ YES       NO
+  ↓         ↓
+Return    Continue
+address
+```
+
+If another matching contact exists, the search continues from the next contact.
+
+When no further match is found, the function returns `NULL`.
+
+---
+
+# 3.11 Phone Search Logic
+
+The phone search accepts the entered phone digits and checks them against the stored phone numbers.
+
+The entered number is converted and processed for comparison.
+
+The search supports matching using the entered portion of the phone number.
+
+```text
+Enter phone/search digits
+        ↓
+Convert/process input
+        ↓
+Traverse contacts
+        ↓
+Compare required digits
+        ↓
+Match?
+```
+
+If a contact matches:
+
+```text
+Return address of matching Contact
+```
+
+If there are no more matches:
+
+```text
+Return NULL
+```
+
+---
+
+# 3.12 Email Search Logic
+
+Email search uses case-insensitive comparison and allows matching against the entered email/search text.
+
+```text
+Enter email/search text
+        ↓
+Traverse contacts
+        ↓
+Case-insensitive comparison
+        ↓
+Match?
+   /       \
+ YES       NO
+  ↓         ↓
+Return    Continue
+address
+```
+
+Again, the search function returns the **address of the matching contact** and returns `NULL` when no matching contact remains.
+
+---
+
+# 3.13 Edit Contact Logic
+
+The edit operation first searches for the required contact.
+
+```text
+Search Contact
+      ↓
+Search function
+      ↓
+Returns Contact address
+      ↓
+Is pointer NULL?
+   /          \
+ NO           YES
+ ↓             ↓
+Display       No match
+contact
+ ↓
+Ask confirmation
+ ↓
+Select field
+```
+
+The user can edit the required contact information.
+
+The new value is passed through the same validation process before updating the contact.
+
+For phone number and email, duplicate checking is also performed.
+
+---
+
+# 3.14 Delete Contact Logic
+
+The delete operation first identifies the contact to be deleted.
+
+After confirmation, the selected contact is removed by **shifting every contact after it one position to the left**.
+
+Example:
+
+```text
+Before deletion:
+
+Index 0 → A
+Index 1 → B
+Index 2 → C
+Index 3 → D
+```
+
+If `B` is deleted:
+
+```text
+Index 0 → A
+Index 1 → C
+Index 2 → D
+```
+
+### Logic
+
+```text
+Find contact index
+       ↓
+Confirm deletion
+       ↓
+Start from deleted index
+       ↓
+contacts[i] = contacts[i + 1]
+       ↓
+Continue until last contact
+       ↓
+Decrease contactCount
+```
+
+So the array remains continuous without an empty position.
+
+---
+
+# 3.15 List Contacts Logic
+
+The List operation allows contacts to be listed according to:
 
 ```text
 Name
@@ -120,870 +572,453 @@ Phone Number
 Email
 ```
 
-Each input is validated before the contact is stored.
+Before sorting, the program compares adjacent contacts.
 
-The program also checks whether the entered phone number or email already exists.
-
-The contact is first stored using the temporary contact structure and is added to the main contacts array only after the required information has been successfully validated.
+The sorting algorithm used is **Bubble Sort**.
 
 ---
 
-# 2. Search Contact
+# 3.16 Bubble Sort Logic
 
-Contacts can be searched using:
+The project uses Bubble Sort to arrange contacts.
 
-```text
-1. Search by name
-2. Search by phone number
-3. Search by email
-```
-
-### Name Search
-
-The program uses `strncasecmp()` to perform a **case-insensitive partial name search**.
-
-For example, searching:
+The basic logic is:
 
 ```text
-rah
-```
-
-can match a contact whose name starts with:
-
-```text
-Rahul
-```
-
-Multiple matching contacts can be displayed.
-
-### Phone Search
-
-The entered phone number is converted to a numeric value and then converted back to a string for comparison.
-
-The program uses `strncasecmp()` with the length of the entered number, allowing a **partial/prefix phone-number search**.
-
-### Email Search
-
-Email searching also uses `strncasecmp()` and allows a **case-insensitive partial email search**.
-
----
-
-# 3. Edit Contact
-
-The Edit Contact operation first searches for the required contact.
-
-The user selects the contact using its displayed index.
-
-The program asks for confirmation before modifying the contact.
-
-The following fields can be edited:
-
-```text
-1. Edit name
-2. Edit phone number
-3. Edit email
-```
-
-The new value is validated before updating the contact.
-
-When changing the phone number or email, the program also checks for duplicate values.
-
----
-
-# 4. Delete Contact
-
-The Delete Contact operation first searches for the required contact.
-
-The user selects the contact using its index.
-
-The program displays the selected contact and asks for confirmation.
-
-If deletion is confirmed:
-
-```text
-Selected contact
+Start from first contact
        ↓
-Remove contact
+Compare adjacent contacts
        ↓
-Shift remaining contacts one position left
+Is first greater than second?
+       /          \
+     YES          NO
+      ↓            ↓
+    Swap         Continue
+      ↓
+Compare next pair
        ↓
-Decrease contactCount
+Repeat passes
+       ↓
+Sorted contacts
 ```
 
-This maintains the contacts array without leaving a gap.
+The complete `Contact` structures are swapped so that the name, phone number, and email remain together.
 
----
+### Sorting by Name
 
-# 5. List Contacts
+The names of adjacent contacts are compared using case-insensitive comparison.
 
-The List option allows contacts to be sorted and displayed using:
+If the first name should come after the second name, the complete structures are swapped.
+
+### Sorting by Phone
+
+Phone numbers are compared numerically.
+
+If:
 
 ```text
-1. List by name
-2. List by phone number
-3. List by email
+phone[i] > phone[i + 1]
 ```
 
-The project implements **Bubble Sort**.
+the complete contact structures are swapped.
 
-### Sort by Name
+### Sorting by Email
 
-Contacts are compared using `strcasecmp()` and arranged in ascending alphabetical order.
+Email addresses are compared using case-insensitive string comparison.
 
-### Sort by Phone Number
-
-Phone numbers are compared numerically and arranged in ascending order.
-
-### Sort by Email
-
-Email addresses are compared using `strcasecmp()` and arranged alphabetically.
-
-When sorting by phone number or email, the contacts are sorted back by name after displaying the requested sorted list.
+If the first email comes after the second email, the complete structures are swapped.
 
 ---
 
-# 6. Save and Exit
+# 3.17 Save Logic
 
-The Save and Exit option saves all contacts into:
+The contacts are saved to:
 
 ```text
 contacts.csv
 ```
 
-The file contains:
+The saving process is:
 
 ```text
-contactCount
-name,phone,email
-name,phone,email
-...
+Open contacts.csv
+       ↓
+Check fopen()
+       ↓
+Write contact count
+       ↓
+Write every contact
+       ↓
+Close file
 ```
 
-The program displays a saving progress indicator and then saves the contacts before exiting.
+The contact data is written in CSV format.
 
 ---
 
-# 7. Exit
+# 3.18 Load Logic
 
-When the user selects Exit, the program asks:
-
-```text
-You are going to exit -> do you want to save the changes before exit?
-
-Enter (YES -Y or NO -N)
-```
-
-The user can choose:
+When the program starts, it attempts to load the existing contacts.
 
 ```text
-Y/y → Save contacts and exit
-N/n → Exit without saving
+Start
+ ↓
+Open contacts.csv
+ ↓
+Read contact count
+ ↓
+Read contact information
+ ↓
+Store in contacts array
+ ↓
+Close file
 ```
 
-Invalid confirmation input is rejected and the program asks again.
+If the file does not exist, the address book starts with no previously stored contacts.
 
 ---
 
-# Input Handling and Validation
+# 3.19 Save and Exit / Exit Logic
 
-A major focus of this project is reliable user-input handling.
+The program provides two ways to leave the application.
 
-The program does not simply assume that the user enters the expected data.
+### Save and Exit
 
-It checks whether the **complete input was received** and whether the input follows the required format.
+```text
+Select Save and Exit
+        ↓
+Save contacts
+        ↓
+Close file
+        ↓
+Exit program
+```
+
+### Exit
+
+The program asks whether the user wants to save the changes.
+
+```text
+Exit
+ ↓
+Ask confirmation
+ ↓
+YES → Save → Exit
+NO  → Exit without saving
+```
+
+Invalid confirmation input is rejected and the user is asked again.
 
 ---
 
-# Challenge 1 – Choice Input Handling
+# 4. Challenges
 
-A major challenge was handling menu choices.
+## Challenge 1 – Choice Input Handling
 
-For example, when the program expects:
+One of the main challenges was handling menu choices correctly.
+
+The user may enter:
 
 ```text
 1
 ```
 
-the user may enter:
+but may also enter:
 
 ```text
 1 2
-```
-
-or:
-
-```text
 abc
-```
-
-or:
-
-```text
 1abc
 ```
 
-or another data type.
+or another datatype.
 
 Using `scanf()` directly can leave unwanted characters in `stdin`.
 
-### Logic Used
+### Solution
 
-```text
-Take choice
-    ↓
-Check scanf() result
-    ↓
-Is input a valid integer?
-    │
-    ├── NO → Clear stdin → Ask again
-    │
-    └── YES
-          ↓
-       getchar()
-          ↓
-   Check next character
-          ↓
-      Is it '\n'?
-       /       \
-     YES       NO
-      ↓         ↓
-   Valid     Invalid
-                ↓
-           Clear stdin
-                ↓
-            Ask again
-```
+The program checks:
 
-For example:
+* Whether `scanf()` successfully read the expected datatype.
+* Whether additional characters remain.
+* Whether the next character is `'\n'`.
+* Clears `stdin` when unwanted characters are found.
+* Repeats the input until a valid complete choice is entered.
 
-```c
-if(scanf("%d", &choice) != 1)
-{
-    while ((ch = getchar()) != '\n' && ch != EOF);
-    continue;
-}
-
-ch = getchar();
-
-if(ch != '\n' && ch != EOF)
-{
-    while ((ch = getchar()) != '\n' && ch != EOF);
-    continue;
-}
-```
-
-This prevents additional input from remaining in `stdin`.
-
-The same type of checking is used for menu selections inside Search, Edit, and List operations.
+This logic is important for **all option selections**, not just the main menu.
 
 ---
 
-# Challenge 2 – Name, Phone Number and Email Validation
+## Challenge 2 – Name, Phone and Email Validation
 
-Another important challenge was ensuring that every contact field entered by the user is actually valid.
+The program must ensure that every piece of contact information entered by the user is valid.
 
-The program does not immediately store the data.
-
-The flow is:
-
-```text
-Take input
-    ↓
-Check complete input
-    ↓
-Remove '\n'
-    ↓
-Validate
-    ↓
-Valid?
-  /     \
-YES     NO
- ↓       ↓
-Store   Ask again
-```
-
-Each input has its own validation function.
-
-```text
-name_input()
-num_input()
-mail_input()
-```
-
-These functions call:
-
-```text
-validname()
-validnum()
-validmail()
-```
-
----
-
-# Name Validation Logic
-
-The name:
-
-* Cannot be empty.
-* Can contain uppercase alphabets.
-* Can contain lowercase alphabets.
-* Can contain spaces.
-* Cannot contain numbers or other special characters.
-
-Logic:
-
-```text
-Name
- ↓
-Is empty?
- ↓
-Reject if empty
- ↓
-Check every character
- ↓
-Alphabet or space?
- ├── YES → Continue
- └── NO  → Reject
-```
-
----
-
-# Phone Number Validation Logic
-
-The phone number is first read as a string using `fgets()`.
-
-The program then converts it using the custom `my_atoi()` function.
-
-The value is valid only when:
-
-```text
-1000000000 <= phone <= 9999999999
-```
-
-Therefore:
-
-* It must contain 10 digits.
-* The first digit cannot be zero.
-
-Example:
-
-```text
-987766788
-```
-
-→ Invalid because it contains only 9 digits.
-
-```text
-0877667889
-```
-
-→ Invalid because the first digit is zero.
-
-```text
-9877667889
-```
-
-→ Valid.
-
----
-
-# Email Validation Logic
-
-The email validation is implemented manually using string operations and `strtok()`.
-
-The email is divided around:
-
-```text
-@
-```
-
-### Username validation
-
-The username:
-
-* Must exist.
-* Must contain at least 8 characters.
-* Must be less than 65 characters.
-* Cannot start with `.`
-* Cannot end with `.`
-* Cannot contain consecutive `..`
-* Can contain lowercase alphabets.
-* Can contain digits.
-* Can contain `.`
-
-### Domain validation
-
-The domain:
-
-* Must exist.
-* Must contain domain parts separated by `.`
-* Each domain part must contain characters.
-* Each domain part must be less than 64 characters.
-* Can contain lowercase alphabets.
-* Can contain digits.
-* Can contain `.`
-
-The program rejects characters that do not satisfy these conditions.
-
----
-
-# Challenge 3 – Keeping `stdin` Clean
-
-A recurring challenge throughout the project was ensuring that unwanted input does not remain in `stdin`.
-
-For example:
-
-```text
-Expected:
-123
-```
-
-but the user enters:
-
-```text
-123abc
-```
-
-The integer may be read successfully while:
-
-```text
-abc
-```
-
-remains in the input stream.
-
-If the program immediately requests another input, the leftover characters can affect the next operation.
+The challenge was not only validating the data but also ensuring that the **complete input entered by the user was actually received**.
 
 ### Solution
 
-The program checks for the newline character:
-
-```c
-ch = getchar();
-
-if(ch != '\n' && ch != EOF)
-{
-    while((ch = getchar()) != '\n' && ch != EOF);
-}
-```
-
-The remaining characters are removed until:
+Each input follows:
 
 ```text
+Input
+ ↓
+Check complete input
+ ↓
+Clear stdin if necessary
+ ↓
+Validate
+ ↓
+Valid?
+ ↓
+YES → Continue
+NO  → Ask again
+```
+
+Separate validation functions are used for name, phone number, and email.
+
+---
+
+## Challenge 3 – Keeping `stdin` Clean Before Every Input
+
+Another major challenge was preventing unwanted data from one input operation from affecting the next input.
+
+The program therefore ensures that `stdin` is clean before taking the next input whenever required.
+
+This prevents situations where leftover characters are accidentally consumed as the next input.
+
+---
+
+## Challenge 4 – Using `fgets()` and Detecting Complete Input
+
+`fgets()` was used to safely control the amount of string data being read.
+
+However, another problem had to be solved:
+
+**How do we know whether the complete user input was received?**
+
+The solution was to check for:
+
+```c
 '\n'
 ```
 
-or:
+If `'\n'` is present, the input was completely received within the buffer.
 
-```text
-EOF
-```
+If it is absent, the input may have exceeded the buffer.
 
-is reached.
-
-This keeps the input stream ready for the next input operation.
+The remaining characters are then cleared from `stdin`, and the user is asked to enter the value again.
 
 ---
 
-# Challenge 4 – Using `fgets()` and Checking Complete Input
+## Challenge 5 – Search Function Returning a Contact Address
 
-`fgets()` was used for string input because it allows the program to specify the maximum number of characters that can be read.
+The search logic required the function to return the **address of the matching contact** rather than simply returning an index.
 
-However, `fgets()` creates an important question:
+This required understanding:
 
-**How can we know whether the entire input was actually received?**
-
-The program checks for:
-
-```c
-strchr(input, '\n')
-```
-
-### If `'\n'` is present
-
-The complete input was received.
-
-The newline is removed:
-
-```c
-*(strchr(input, '\n')) = '\0';
-```
-
-Then the input is validated.
-
-### If `'\n'` is not present
-
-The input may be longer than the available buffer.
-
-The remaining characters are cleared from `stdin`:
-
-```c
-while ((ch = getchar()) != '\n' && ch != EOF);
-```
-
-The input is rejected and the user is asked to enter it again.
-
-This logic is used for:
-
-* Name
-* Phone number
-* Email
-
----
-
-# Duplicate Contact Checking
-
-While creating or editing a contact, the program checks whether:
-
-* Phone number already exists
-* Email already exists
-
-For example:
-
-```text
-Enter phone number
-       ↓
-Validate phone
-       ↓
-Search existing contacts
-       ↓
-Already exists?
-   /          \
- YES          NO
-  ↓            ↓
-Ask again    Continue
-```
-
-This prevents duplicate phone numbers and email addresses from being stored.
-
----
-
-# Searching Logic
-
-The search functions maintain a pointer inside the contacts array.
-
-The search functions are:
-
-```text
-name_search()
-num_search()
-mail_search()
-```
-
-The search starts from the beginning of the contact array.
-
-When a match is found, the matching contact is returned and the pointer is advanced.
-
-Calling the search function again allows the program to find subsequent matching contacts.
-
-This is how multiple matching contacts can be displayed.
-
----
-
-# Sorting Logic
-
-The project uses **Bubble Sort**.
-
-## Name
-
-```text
-Compare contact[i].name
-with
-contact[i+1].name
-
-If first > second
-        ↓
-Swap complete Contact structures
-```
-
-Comparison uses:
-
-```c
-strcasecmp()
-```
-
-so the comparison is case-insensitive.
-
-## Phone
-
-Phone numbers are compared numerically:
-
-```text
-contact[i].phone > contact[i+1].phone
-```
-
-If true, the complete structures are swapped.
-
-## Email
-
-Email addresses are compared using:
-
-```c
-strcasecmp()
-```
-
-and the complete contact structures are swapped when required.
-
----
-
-# Delete Logic
-
-When a contact is deleted, the program does not simply clear the element.
-
-Instead, it shifts all contacts after the deleted index one position toward the beginning of the array.
-
-Example:
-
-```text
-Before:
-
-0 → A
-1 → B
-2 → C
-3 → D
-```
-
-Delete `B`:
-
-```text
-0 → A
-1 → C
-2 → D
-```
-
-Then:
-
-```c
---addressBook->contactCount;
-```
-
-is used to update the number of contacts.
-
----
-
-# File Handling Logic
-
-## Loading
-
-At program initialization:
-
-```text
-Initialize AddressBook
-        ↓
-Set contactCount = 0
-        ↓
-Open contacts.csv
-        ↓
-File exists?
-    /          \
-  YES           NO
-   ↓             ↓
-Read count    Start with
-   ↓           0 contacts
-Read contacts
-   ↓
-Close file
-```
-
-If `contacts.csv` does not exist, the program sets the contact count to zero and starts the address book without previously saved contacts.
-
----
-
-## Saving
-
-When saving:
-
-```text
-Open contacts.csv in "w" mode
-        ↓
-Check fopen()
-        ↓
-Write contact count
-        ↓
-Write every contact
-        ↓
-Close file
-```
-
-Each contact is stored as:
-
-```text
-name,phone,email
-```
-
-The program uses:
-
-```c
-fprintf()
-```
-
-to write the contact information.
-
----
-
-# Custom Number Conversion
-
-The project also implements its own:
-
-```text
-my_atoi()
-my_itoa()
-```
-
-functions.
-
-## `my_atoi()`
-
-Converts a numeric string into an unsigned long integer.
-
-The logic processes each digit:
-
-```text
-num = num * 10 + digit
-```
-
-For example:
-
-```text
-9876
-
-9
-98
-987
-9876
-```
-
-## `my_itoa()`
-
-Converts an unsigned long integer into a string.
-
-The digits are extracted using division and modulus operations and then arranged into the correct order.
-
-These functions are used instead of relying entirely on the standard conversion functions.
-
----
-
-# Programming Concepts Used
-
-* C Programming
-* Structures
-* Arrays
 * Pointers
-* Pointer arithmetic
-* Functions
-* Function prototypes
-* Header files
-* Modular programming
-* Character arrays
-* String manipulation
-* `strlen()`
-* `strcpy()`
-* `strchr()`
-* `strcmp()` / `strcasecmp()`
-* `strncasecmp()`
-* `strtok()`
-* `fgets()`
-* `scanf()`
-* `getchar()`
-* File handling
-* CSV file storage
-* `fopen()`
-* `fprintf()`
-* `fscanf()`
-* `fclose()`
-* Bubble sort
-* Searching
-* Input validation
-* Error handling
-* `stdin` buffer management
-* Pointer arithmetic
-* Custom `atoi` / `itoa` implementation
+* Structure addresses
+* Pointer return values
+* `NULL`
+* Pointer traversal
+
+The function returns:
+
+```text
+Address of matching Contact
+```
+
+and:
+
+```text
+NULL
+```
+
+when no matching contact remains.
+
+This also makes it possible to continue searching for multiple matches.
 
 ---
 
-# Challenges
+## Challenge 6 – Handling Multiple Search Results
 
-### 1. Choice Input Handling
+A search may produce more than one matching contact.
 
-Handling cases where the user enters:
+The challenge was to avoid stopping after the first result.
+
+The search pointer is therefore advanced after finding a match, allowing the next call to continue searching from the next contact.
+
+When no further match is found, `NULL` is returned.
+
+---
+
+## Challenge 7 – Deleting Contacts From an Array
+
+Since contacts are stored in an array, deleting an element creates a gap.
+
+The solution was to shift **every contact after the deleted contact one position to the left**.
 
 ```text
-Multiple values
-Wrong datatype
-Extra characters
-Invalid menu choices
+Deleted index
+      ↓
+Copy next contact to current position
+      ↓
+Continue until last contact
+      ↓
+Decrease contactCount
 ```
 
-and ensuring that the unwanted data is cleared from `stdin`.
+This keeps the array continuous.
 
-### 2. Input Validation
+---
 
-Implementing separate validation for:
+## Challenge 8 – Sorting Structures
+
+Sorting contacts is more complicated than sorting a simple integer array because each contact contains:
 
 ```text
 Name
-Phone number
+Phone
 Email
 ```
 
-and repeatedly requesting input until valid data is entered.
+When two contacts need to be swapped, the **complete Contact structure** must be swapped.
 
-### 3. `stdin` Management
+Otherwise, the name could become associated with another person's phone number or email.
 
-Ensuring that leftover characters from one input operation do not become unwanted input for the next operation.
-
-### 4. Complete Input Detection with `fgets()`
-
-Using `fgets()` safely and checking for `'\n'` to determine whether the complete input was received.
-
-If the newline is absent, the remaining input is cleared and the user is asked to enter the value again.
-
-### 5. Duplicate Data
-
-Checking existing contacts before accepting a new phone number or email address.
-
-### 6. Multiple Search Results
-
-Maintaining a search pointer so that multiple contacts matching the same name, phone prefix, or email prefix can be displayed.
-
-### 7. Array Management During Delete
-
-Removing a contact by shifting all subsequent contacts and updating `contactCount`.
-
-### 8. Sorting Complete Structures
-
-When sorting contacts, the complete `Contact` structure must be exchanged so that the name, phone number, and email remain associated with the correct person.
+Bubble Sort was implemented to handle this.
 
 ---
 
-# Learnings
+## Challenge 9 – Duplicate Phone Numbers and Emails
 
-## C Programming
+The program also checks whether a phone number or email already exists.
 
-* Practical use of structures and arrays.
-* Working with pointers and pointer arithmetic.
+This is particularly important during:
+
+* Contact creation
+* Contact editing
+
+If a duplicate is detected, the user is asked to enter a different value.
+
+---
+
+## Challenge 10 – File Handling
+
+The program needs to preserve contacts between executions.
+
+The challenge was handling:
+
+* File opening
+* File reading
+* File writing
+* Missing files
+* Correct CSV formatting
+* Closing files properly
+
+The program checks whether `fopen()` succeeds before performing file operations.
+
+---
+
+# 5. Learnings
+
+## 5.1 C Structures
+
+Learned how to create and work with structures for storing related information.
+
+A contact groups:
+
+```text
+Name
+Phone
+Email
+```
+
+into one `Contact` structure.
+
+The address book then maintains an array of these structures.
+
+---
+
+## 5.2 Pointers
+
+The project provided practical experience with pointers.
+
+Particularly:
+
 * Passing structures using pointers.
-* Creating reusable functions.
-* Splitting a large program into multiple `.c` and `.h` files.
-* Working with character arrays and strings.
+* Accessing structure members using `->`.
+* Returning the address of a structure.
+* Storing the returned address in a pointer.
+* Checking whether a returned pointer is `NULL`.
+* Moving a pointer through an array.
 
-## Input Handling
+The search implementation was especially useful for understanding that a function can return:
 
-Learned that user input must be validated instead of assuming that the user always enters the expected value.
+```text
+Address of a structure
+```
 
-Learned to:
+rather than only a numeric index.
 
-* Detect invalid data types.
+---
+
+## 5.3 `NULL` and Pointer-Based Searching
+
+Learned how `NULL` can be used to indicate that no matching contact was found.
+
+The search flow became:
+
+```text
+Match found
+    ↓
+Return Contact address
+
+No match
+    ↓
+Return NULL
+```
+
+This is useful for controlling repeated searches and detecting the end of the search process.
+
+---
+
+## 5.4 Input Buffer / `stdin` Management
+
+One of the most important learnings was understanding how input remains in `stdin`.
+
+Learned how to:
+
+* Detect leftover input.
+* Clear unwanted characters.
+* Handle invalid datatypes.
 * Detect extra input.
-* Clear `stdin`.
-* Use `fgets()` for controlled string input.
-* Check for `'\n'`.
-* Detect incomplete input.
-* Prevent leftover input from affecting the next operation.
+* Ensure `stdin` is clean before another input operation.
+* Prevent one invalid input from affecting the next input.
 
-## Validation
+---
 
-Learned how to build separate validation logic for different types of data.
+## 5.5 `fgets()` and Buffer Handling
+
+Learned why `fgets()` is useful for controlled string input.
+
+Also learned that simply using `fgets()` is not enough.
+
+It is necessary to check whether:
+
+```c
+'\n'
+```
+
+was read.
+
+This allows the program to detect whether the complete input was received or whether additional characters remain in `stdin`.
+
+---
+
+## 5.6 Input Validation
+
+Learned how to build dedicated validation functions for different types of data.
 
 ```text
 Name
@@ -992,59 +1027,143 @@ Character validation
 
 Phone
  ↓
-Digit / range validation
+Digit + length + first-digit validation
 
 Email
  ↓
 Username + @ + domain validation
 ```
 
-## File Handling
-
-Learned how to:
-
-* Open files using `fopen()`.
-* Check whether a file was opened successfully.
-* Read data using `fscanf()`.
-* Write data using `fprintf()`.
-* Close files using `fclose()`.
-* Store structured information in CSV format.
-* Load previously saved data when the program starts.
-
-## Searching
-
-Learned how to:
-
-* Traverse an array using pointers.
-* Perform case-insensitive comparisons.
-* Implement partial searches.
-* Return matching structure pointers.
-* Continue searching for multiple matches.
-
-## Sorting
-
-Learned how Bubble Sort works with structures and how to swap complete structures while maintaining the relationship between name, phone number, and email.
-
-## Debugging
-
-The project improved my ability to identify problems caused by:
-
-* Incorrect input types
-* Extra characters in `stdin`
-* Incomplete `fgets()` input
-* Buffer limitations
-* Invalid strings
-* Duplicate contacts
-* Array indexing
-* Pointer movement
-* File-opening errors
-* String comparison
-* Structure manipulation
-
-The main learning was to trace the complete flow of data from **input → validation → processing → storage → output**, instead of fixing only the visible error.
+This makes the application more reliable.
 
 ---
 
-# Key Skills
+## 5.7 Searching
 
-**C | Structures | Arrays | Pointers | Pointer Arithmetic | Functions | Strings | String Manipulation | Input Validation | `stdin` Management | `fgets()` | `scanf()` | File Handling | CSV | Searching | Sorting | Bubble Sort | Modular Programming | Debugging | Error Handling**
+Learned how to implement searching through an array of structures using pointers.
+
+Important concepts learned:
+
+* Traversing arrays.
+* String comparison.
+* Case-insensitive comparison.
+* Partial matching.
+* Returning structure addresses.
+* Returning `NULL` when no match exists.
+* Continuing a search from a later position.
+
+---
+
+## 5.8 Bubble Sort
+
+Learned how **Bubble Sort** works with an array of structures.
+
+The important concept is that when two contacts are exchanged, the **entire structure** must be swapped.
+
+This preserves the relationship between:
+
+```text
+Name ↔ Phone ↔ Email
+```
+
+---
+
+## 5.9 Array Manipulation
+
+Learned how to delete an element from an array by shifting all subsequent elements to the left.
+
+```text
+Before:
+
+A B C D
+
+Delete B
+
+After:
+
+A C D
+```
+
+Also learned to update `contactCount` after deletion.
+
+---
+
+## 5.10 File Handling
+
+Learned practical file-handling operations:
+
+* `fopen()`
+* `fscanf()`
+* `fprintf()`
+* `fclose()`
+* Checking `fopen()` failure
+* Reading stored data
+* Writing updated data
+* Maintaining persistent data using CSV
+
+---
+
+## 5.11 Modular Programming
+
+Learned how to split a C project into multiple source and header files.
+
+```text
+main.c
+contact.c
+contact.h
+file.c
+file.h
+populate.c
+populate.h
+```
+
+This makes the program easier to:
+
+* Understand
+* Debug
+* Maintain
+* Modify
+* Reuse
+
+---
+
+## 5.12 Debugging and Problem Solving
+
+The project improved practical debugging skills by solving issues involving:
+
+* `stdin`
+* `scanf()`
+* `fgets()`
+* Buffer limits
+* Newline handling
+* String validation
+* Pointers
+* `NULL`
+* Structure addresses
+* Array shifting
+* Bubble Sort
+* Duplicate checking
+* File handling
+* Function interaction
+
+The major learning was to understand the **complete data flow**:
+
+```text
+User Input
+    ↓
+Input Handling
+    ↓
+stdin Check
+    ↓
+Validation
+    ↓
+Processing
+    ↓
+Structure / Array
+    ↓
+Search / Sort / Edit / Delete
+    ↓
+File Storage
+```
+
+This project strengthened my understanding of how individual C concepts work together to build a complete application.
